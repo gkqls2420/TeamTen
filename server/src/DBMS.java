@@ -3,14 +3,14 @@ public class DBMS {
 	String DB_URL;
 	String DB_USER;
 	String DB_PASSWORD;
-	public Connection con;
-	public Statement stmt;
-	public CallableStatement cstmt;
-	public ResultSet rs;
+	public Connection con = null;
+	public Statement stmt = null;
+	public CallableStatement cstmt = null;
+	public ResultSet rs = null;
+	public int cnt = 1;
 	private static DBMS dbms;
 	private Card card;
 	private Volunteer volunte;
-	
 	
 	public static DBMS getDBMS(Mediator mediator) {
 		
@@ -49,26 +49,65 @@ public class DBMS {
 		}
 	}
 	
+	
 	//execute query to get card informations
-	public boolean loadCards(Card card)
-	{
-		//select * from card_table where name = name and pNumber = phone_num
-		//if nothing selected, return inputCards(card);
-		//else if card != selected card, return false
-		//else	/*same*/
-		return true;
+	public boolean loadCards(Card card) throws SQLException{	
+		
+			String query = "select * from card where name = card.name and pNumber = card.phonenumber";
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(query);
+			if(rs.next())
+				return true;
+			else
+				return inputCards(card);
+		
 	}
 	
 	//put cards into table, return true if it was successful, else return false.
-	public boolean inputCards(Card card)
+	public boolean inputCards(Card card) throws SQLException
 	{
-		return true;
+		
+		
+		if(card.getVMS_ID() != null){
+			String query = "insert into card(name, phonenumber,vmsid) values('"+card.name+"','"+card.pNumber+"','"+card.getVMS_ID()+"');";
+		
+			stmt = con.createStatement();
+			cnt=stmt.executeUpdate(query);
+		}
+		else{
+			String query = "insert into card(name, phonenumber) values('"+card.name+"','"+card.pNumber+");";
+			stmt = con.createStatement();
+			cnt=stmt.executeUpdate(query);
+		}
+		if(cnt==0)
+			return false;
+		else
+			return true;
+		
 	}
 	
 	//put volunteers' info into table, return true if it was successful, else return false.
-	public Volunteer inputVolunteers(Volunteer volunte)
+	public Volunteer inputVolunteers(Volunteer volunte) throws SQLException
 	{
-		//use trigger and return the result
-		return volunte;
+		int card_cardnumber;
+		String query1 = "select cardnumber from card where name ='"+card.name +"' and phonenumber ="+ card.pNumber;
+		stmt = con.createStatement();
+		rs = stmt.executeQuery(query1);
+		if(rs.next())
+			card_cardnumber= rs.getInt("cardnumber");
+		
+		else 
+			return volunte;
+		
+		String query2 = "insert into volunteer(starttime, endtime, content) values('"+card_cardnumber+"','"+volunte.vStartDate+"','"+volunte.vEndDate+"'"+"','"+volunte.vInfo+");";
+		stmt = con.createStatement();
+		cnt=stmt.executeUpdate(query2); 
+		if(cnt==0)
+			return null; 
+		else
+			return volunte;
+		
 	}
+	
+	
 }
