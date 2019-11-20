@@ -9,6 +9,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -123,6 +124,10 @@ public class TCPManager {
 		} catch(IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();	
+		} catch(SQLException e) {
+			e.printStackTrace();
 		}
+		
+		
 	}
 }

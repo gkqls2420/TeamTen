@@ -1,3 +1,5 @@
+import java.sql.SQLException;
+
 public class Mediator {
 	private CardManager cardManager;
 	private DBMS dbms;
@@ -16,7 +18,7 @@ public class Mediator {
 		tcpManager.run();
 	}
 	
-	public boolean handle(String state, Card data) {
+	public boolean handle(String state, Card data) throws SQLException {
 		switch(state) {
 			case "DBMS":
 				return dbms.loadCards(data);
@@ -25,7 +27,7 @@ public class Mediator {
 		}
 	}
 	
-	public Mediator handle(String state, Volunteer data) {
+	public Mediator handle(String state, Volunteer data) throws SQLException {
 		switch(state) {
 			case "DBMS":
 				this.data = dbms.inputVolunteers(data);
