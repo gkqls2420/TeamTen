@@ -15,15 +15,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ExcelManager {
 	
 	private static ExcelManager excelmanager;
-	private static XSSFWorkbook workbook ;
-	private static FileInputStream fis;
-	private static FileOutputStream fos;
-	private final String xsspath = "C:\\Users\\wlvkd\\Desktop\\test.xlsx"; //write your xlsx file path plz;
-	private final int cellend = 8; 
+	private static XSSFWorkbook volunteerworkbook ;
+	private static XSSFWorkbook cardworkbook ;
+	private static XSSFWorkbook managerworkbook;
 	
+	private static FileInputStream fis=null;
+	private static FileOutputStream fos =null;
+	private final String xsspath = "C:\\Users\\wlvkd\\Desktop\\"; //write your xlsx file path plz;
+
+	
+	private final String volunteerfilepath ="봉사기록.xlsx";
+	private final String cardfilepath= "봉사카드.xlsx";
+	private final String managerfilepath ="관리자인증.xlsx";
+
 	private ExcelManager(Mediator mediator) {
 		
-		workbook = getWorkbook(xsspath);
+		volunteerworkbook = getWorkbook(xsspath+volunteerfilepath);
+		cardworkbook = getWorkbook(xsspath + cardfilepath);
+		managerworkbook = getWorkbook(xsspath + managerfilepath);
 	}
 	
 	public static ExcelManager getExcelManager(Mediator mediator) {
@@ -38,7 +47,9 @@ public class ExcelManager {
 	public Volunteer WriteVoluenteertoExcel(Volunteer volunteer) {
 		XSSFRow row=null;
 		XSSFCell cell=null;
-		XSSFSheet sheet=workbook.getSheetAt(0);
+		XSSFSheet sheet=volunteerworkbook.getSheetAt(0);
+		
+		System.out.println("봉사 기록 체크....");
 		
 		int rowTotal = sheet.getLastRowNum();
 
@@ -46,42 +57,35 @@ public class ExcelManager {
 		    rowTotal++;
 		}
 		 row=sheet.createRow((short)rowTotal);
-
-		 
-		 CellStyle dateStyle = workbook.createCellStyle();
-		 CreationHelper createHelper = workbook.getCreationHelper();
-		 dateStyle .setDataFormat(
-             createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm"));	
-		 
-		 
-		 
-		 CellStyle hourStyle = workbook.createCellStyle();
-         CreationHelper createHelper2 = workbook.getCreationHelper();
-         hourStyle .setDataFormat(
-             createHelper2.createDataFormat().getFormat("hh:mm"));	
-         
-         for(int cellstate = 0; cellstate< cellend ;cellstate++) {
+		 CellStyle dateStyle = volunteerworkbook.createCellStyle();
+		 CellStyle hourStyle = volunteerworkbook.createCellStyle();
+		 CreationHelper createHelper = volunteerworkbook.getCreationHelper();
+		 dateStyle.setDataFormat(
+				 createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm"));	
+		 hourStyle.setDataFormat( 
+				 createHelper.createDataFormat().getFormat("hh:mm"));
+         for(int cellstate = 0; cellstate< 8 ;cellstate++) {
         	 
         	 cell=row.createCell(cellstate);
         	 
         	 switch(cellstate) {
         	 
         	 case 0:
-
+	
                  cell.setCellType(CellType.NUMERIC);
                  cell.setCellStyle(dateStyle);
                  cell.setCellValue(new Date());
                  break;
         	 case 1:
-
+        		 
                  cell.setCellType(CellType.NUMERIC);
-                 cell.setCellStyle(hourStyle);
+                 cell.setCellStyle( hourStyle);
                  cell.setCellValue(volunteer.vStartDate);
                  break;
         	 case 2:
         		 cell=row.createCell(cellstate);
                  cell.setCellType(CellType.NUMERIC);
-                 cell.setCellStyle(hourStyle);
+                 cell.setCellStyle( hourStyle);
                  cell.setCellValue(volunteer.vEndDate);
                  break;
                  
@@ -115,14 +119,77 @@ public class ExcelManager {
         	
          }
          //cellsize auto rearrange
-		 for(int i=0;i<cellend;i++) {
+		 for(int i=0;i<8;i++) {
 			 sheet.autoSizeColumn(i);
 		 } 
 		 //out to the excell and return check
  
 
-		if(volunteer != null && outWorkbook(xsspath,workbook)) {
+		if(volunteer != null && outWorkbook(xsspath+volunteerfilepath,volunteerworkbook)) {
 				return volunteer;
+		}else {
+				return null;
+		}
+			
+	}
+	
+	//write the card to excel
+	public Card WriteCardtoExcel(Card card) {
+		
+		
+		XSSFRow row=null;
+		XSSFCell cell=null;
+		XSSFSheet sheet=volunteerworkbook.getSheetAt(0);
+		
+		int rowTotal = sheet.getLastRowNum();
+
+		if ((rowTotal > 0) || (sheet.getPhysicalNumberOfRows() > 0)) {
+		    rowTotal++;
+		}
+		 row=sheet.createRow((short)rowTotal);
+
+		 CellStyle dateStyle = cardworkbook.createCellStyle();
+		 CreationHelper createHelper = cardworkbook.getCreationHelper();	
+		 dateStyle.setDataFormat(
+	             createHelper.createDataFormat().getFormat("yyyy-MM-dd HH:mm"));
+		 
+         for(int cellstate = 0; cellstate< 4 ;cellstate++) {
+        	 
+        	 cell=row.createCell(cellstate);
+        	 
+        	 switch(cellstate) {
+        	 
+        	 //card name
+        	 case 0:
+        		 cell.setCellValue(card.name);
+                 break;
+             //card.pNumber
+        	 case 1:
+        		 
+        		 cell.setCellValue(card.pNumber);
+        		 
+        	//card.registerDate	 
+        	 case 2:	 
+        		 
+        		 cell.setCellType(CellType.NUMERIC);
+                 cell.setCellStyle(dateStyle);
+                 cell.setCellValue(card.registerDate);
+             //card.VMS_ID
+        	 case 3:
+        		 cell.setCellValue(card.getVMS_ID());
+        	 
+        	 }
+        	
+         }
+         //cellsize auto rearrange
+		 for(int i=0;i<4;i++) {
+			 sheet.autoSizeColumn(i);
+		 } 
+		 //out to the excell and return check
+ 
+
+		if(card != null && outWorkbook(xsspath + cardfilepath,cardworkbook)) {
+				return card;
 		}else {
 				return null;
 		}
@@ -135,7 +202,7 @@ public class ExcelManager {
 		int rowindex=0;
 		int columnindex=0;
 
-		XSSFSheet sheet= workbook.getSheetAt(1);
+		XSSFSheet sheet= managerworkbook.getSheetAt(0);
 		int rows=sheet.getPhysicalNumberOfRows();
 		for(rowindex=0;rowindex<rows;rowindex++){
 		    //read the rows
@@ -179,24 +246,26 @@ public class ExcelManager {
 	
 private static XSSFWorkbook getWorkbook(String filePath) {
         
-        fis = null;
+        System.out.println(filePath+"확인중");
         try {
             fis = new FileInputStream(filePath);
+            XSSFWorkbook wb = null;
+            
+            if(filePath.toUpperCase().endsWith(".XLSX")) {
+                try {
+                    wb = new XSSFWorkbook(fis);
+                } catch (IOException e) {
+                    throw new RuntimeException(e.getMessage(), e);
+                }
+            }
+            
+            return wb;
         } catch (FileNotFoundException e) {
+        	
             throw new RuntimeException(e.getMessage(), e);
         }
         
-        XSSFWorkbook wb = null;
         
-        if(filePath.toUpperCase().endsWith(".XLSX")) {
-            try {
-                wb = new XSSFWorkbook(fis);
-            } catch (IOException e) {
-                throw new RuntimeException(e.getMessage(), e);
-            }
-        }
-        
-        return wb;
         
     }
 
@@ -204,7 +273,7 @@ private static boolean outWorkbook(String filePath,XSSFWorkbook wb) {
 	
 	try {
 		fos = new FileOutputStream(filePath); 
-		workbook.write(fos);
+		wb.write(fos);
         fos.close();
         System.out.println("저장성공");
         return true;
