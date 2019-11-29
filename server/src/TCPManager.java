@@ -36,9 +36,7 @@ public class TCPManager {
 						Card card;
 						Date date = new Date();
 						//result = mediator.handle("Card", data).handle("DBMS", (Card) mediator.getData());
-						card = (Card)mediator.getData();
-						card.registerDate = date;
-						card = (Card) mediator.handle("Excel", data).getData();
+						card = (Card)mediator.handle("Card", data).handle("Excel", (Card)mediator.getData());
 						out.println(card.registerDate);
 
 						break;
@@ -61,7 +59,6 @@ public class TCPManager {
 					out.println(result.toString());
 					out.flush();
 				}
-				// c
 				socket.close();
 
 			}

@@ -2,6 +2,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -25,14 +26,14 @@ public class ExcelManager {
 
 	private static FileInputStream fis = null;
 	private static FileOutputStream fos = null;
-	private final String xsspath = "C:\\Users\\wlvkd\\Desktop\\"; // write your xlsx file path plz;
+	private final String xsspath = Paths.get("").toAbsolutePath().toString()+"\\"; // write your xlsx file path plz;
 
 	private final String volunteerfilepath = "봉사기록.xlsx";
 	private final String cardfilepath = "봉사카드.xlsx";
 	private final String managerfilepath = "관리자인증.xlsx";
 
 	private ExcelManager(Mediator mediator) {
-
+		System.out.print(xsspath);
 		volunteerworkbook = getWorkbook(xsspath + volunteerfilepath);
 		cardworkbook = getWorkbook(xsspath + cardfilepath);
 		managerworkbook = getWorkbook(xsspath + managerfilepath);
@@ -203,7 +204,7 @@ public class ExcelManager {
 	}
 
 
-	public PW cheackManager(String[] data) {
+	public PW checkManager(String[] data) {
 		XSSFSheet sheet = managerworkbook.getSheetAt(0);
 		if (findCell(sheet, data[1]) != null) {
 			System.out.println("PW SUCCESS");
