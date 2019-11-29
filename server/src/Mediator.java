@@ -2,7 +2,7 @@ import java.sql.SQLException;
 
 public class Mediator {
 	private CardManager cardManager;
-	private DBMS dbms;
+	//private DBMS dbms;
 	private ExcelManager excelManager;
 	private TCPManager tcpManager;
 	private VolunteerManager volunteerManager;
@@ -10,7 +10,7 @@ public class Mediator {
 	
 	public Mediator() {
 		cardManager = new CardManager(this);
-		dbms = DBMS.getDBMS(this);
+		//dbms = DBMS.getDBMS(this);
 		excelManager = ExcelManager.getExcelManager(this);
 		tcpManager = new TCPManager(this);
 		volunteerManager = new VolunteerManager(this);
@@ -18,20 +18,23 @@ public class Mediator {
 		tcpManager.run();
 	}
 	
-	public boolean handle(String state, Card data) throws SQLException {
+	public Card handle(String state, Card data) throws SQLException {
 		switch(state) {
-			case "DBMS":
-				return dbms.loadCards(data);
+			/*case "DBMS":
+				return dbms.loadCards(data);*/
+			case "Excel":
+				return excelManager.WriteCardtoExcel(data);
 			default:
-				return false;
+				return null;
 		}
 	}
 	
 	public Mediator handle(String state, Volunteer data) throws SQLException {
+		System.out.println(state + " " + data);
 		switch(state) {
-			case "DBMS":
+			/*case "DBMS":
 				this.data = dbms.inputVolunteers(data);
-				break;
+				break;*/
 			case "Excel":
 				this.data = excelManager.WriteVoluenteertoExcel(data);
 				break;
@@ -44,7 +47,7 @@ public class Mediator {
 	public Mediator handle(String state, String[] data) {
 		switch(state) {
 			case "Excel":
-				this.data =  excelManager.cheackManager(data);
+				this.data =  excelManager.checkManager(data);
 				break;
 			case "Volunteer":
 				this.data = volunteerManager.converse(data);
