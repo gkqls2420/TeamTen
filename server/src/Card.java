@@ -3,7 +3,7 @@ import java.util.Date;
 public class Card extends Data{
 	public final String name;
 	public final int pNumber;
-	public final Date registerDate;
+	public Date registerDate;
 	private String VMS_ID;
 	
 	public Card(String name, int number, Date date)
