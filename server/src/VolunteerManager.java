@@ -5,7 +5,7 @@ import java.util.Date;
 public class VolunteerManager {
 	private Volunteer volunteer;
 	private Mediator mediator;
-	SimpleDateFormat dataformat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	SimpleDateFormat dataformat = new SimpleDateFormat("yyyyMMddHHmm");
 	
 	public VolunteerManager(Mediator mediator) {
 		this.mediator = mediator;

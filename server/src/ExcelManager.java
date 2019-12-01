@@ -33,7 +33,6 @@ public class ExcelManager {
 	private final String managerfilepath = "관리자인증.xlsx";
 
 	private ExcelManager(Mediator mediator) {
-		System.out.print(xsspath);
 		volunteerworkbook = getWorkbook(xsspath + volunteerfilepath);
 		cardworkbook = getWorkbook(xsspath + cardfilepath);
 		managerworkbook = getWorkbook(xsspath + managerfilepath);
@@ -142,7 +141,7 @@ public class ExcelManager {
 
 		// find already cell
 		Date d = ReadCardFromExcel(sheet, card);
-		if (d != card.registerDate) {
+		if (d != null && d != card.registerDate) {
 			card.registerDate = d;
 			System.out.println("이미 1년 안에 생성된 카드입니다." + d);
 			return card;
