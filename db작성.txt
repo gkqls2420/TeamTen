@@ -1,0 +1,73 @@
+//table 생성
+create table card(
+cardnumber number(10) not null,
+name varchar(10),
+phonenumber number(5),
+writedate date default sysdate,
+vmsid varchar(10)
+);
+alter table card add( 
+primary key (cardnumber)
+);
+
+create table volunteer(
+card_cardnumber number not null,
+starttime number,
+endtime number,
+content varchar(10),
+bigo varchar(50),
+FOREIGN KEY(card_cardnumber) references card(cardnumber),
+PRIMARY KEY(card_cardnumber, starttime)
+);
+
+
+//sequence 생성
+create sequence cardnumber_seq
+start with 1;
+
+
+//function 생성
+create or replace function get_cardnumber(v_name char, v_phonenumber number)
+return number
+is
+v_cardnumber volunteer.card_cardnumber%type;
+begin
+select cardnumber
+into v_cardnumber
+from card
+where name=v_name and phonenumber=v_phonenumber;
+return v_cardnumber;
+end;
+
+
+//trigger 생성
+create trigger check_time
+before insert on volunteer
+for each row
+begin
+if(TO_CHAR(sysdate, 'hh24:mi:ss')<:new.endtime) or ( :new.endtime < :new.starttime)
+then raise_application_error(-20500, '시간 잘못 입력하셨습니다~^^');
+end if;
+end;
+
+
+create or replace trigger card_cardnumber
+before insert on card
+for each row
+begin
+select cardnumber_seq.nextval
+into :new.cardnumber
+from dual;
+end;
+
+
+create or replace trigger time_adjust
+before update on volunteer
+for each row
+begin
+if (TO_CHAR(sysdate, 'yyyy-mm-dd hh24:mi:ss')<:new.starttime) or 
+(TO_CHAR(sysdate, 'yyyy-mm-dd hh24:mi:ss')<:new.endtime)
+then raise_application_error(-20500, '시간 잘못 입력하셨습니다~^^');
+end if;
+end;
+
